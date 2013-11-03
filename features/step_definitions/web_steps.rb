@@ -35,14 +35,25 @@ Given /^the blog is set up$/ do
   Blog.default.update_attributes!({:blog_name => 'Teh Blag',
                                    :base_url => 'http://localhost:3000'});
   Blog.default.save!
-  User.create!({:login => 'admin',
-                :password => 'aaaaaaaa',
-                :email => 'joe@snow.com',
-                :profile_id => 1,
-                :name => 'admin',
-                :state => 'active'})
+  User.create!({:login => 'admin',:password => 'aaaaaaaa',:email => 'joe@snow.com',:profile_id => 1,:name => 'admin',:state => 'active'})
+  User.create!({:login => 'user1',:password => 'bbbbbb',:email => 'joe1@snow.com',:profile_id => 2,:name => 'user1',:state => 'active'})
+  User.create!({:login => 'user2',:password => 'cccccc',:email => 'joe2@snow.com',:profile_id => 3,:name => 'user2',:state => 'active'})
+  Article.create(:allow_comments => true, :allow_pings => true, :author => "user1", :body => "cool", :id => 1, :permalink => "cool", :post_type => "read", :published => true, :published_at => "2012-06-09 21:51:55 UTC", :settings => {"password"=>""}, :state => "published", :text_filter_id => 5, :title => "Cool!", :type => "Article", :user_id => 2)
+  Article.create(:allow_comments => true, :allow_pings => true, :author => "user2", :body => "wassup", :id => 2, :permalink => "wassup", :post_type => "read", :published => true, :published_at => "2012-07-09 21:51:55 UTC", :settings => {"password"=>""}, :state => "published", :text_filter_id => 5, :title => "Wassup!", :type => "Article", :user_id => 3)
 end
 
+Given /^I am logged into the public user panel as "(.*?)" with password "(.*?)"$/ do |name,pass|
+  visit '/accounts/login'
+  fill_in 'user_login',:with => name
+  fill_in 'user_password',:with => pass
+  click_button 'Login'
+  if page.respond_to? :should
+    page.should have_content('Login successful')
+  else
+    assert page.has_content?('Login successful')
+  end
+end
+  
 And /^I am logged into the admin panel$/ do
   visit '/accounts/login'
   fill_in 'user_login', :with => 'admin'
